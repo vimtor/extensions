@@ -47,14 +47,23 @@ function UnreadNotifications() {
 
   async function markAllNotificationsAsRead() {
     try {
-      await mutate(octokit.activity.markNotificationsAsRead(), {
-        optimisticUpdate() {
-          return [];
+      await mutate(
+        preferences.markAsDone ? octokit.activity.markThreadAsDone() : octokit.activity.markNotificationsAsRead(),
+        {
+          optimisticUpdate() {
+            return [];
+          },
         },
+      );
+      showToast({
+        style: Toast.Style.Success,
+        title: `Marked all notifications as ${preferences.markAsDone ? "done" : "read"}`,
       });
-      showToast({ style: Toast.Style.Success, title: "Marked all notifications as read" });
     } catch {
-      showToast({ style: Toast.Style.Failure, title: "Could not mark all notifications as read" });
+      showToast({
+        style: Toast.Style.Failure,
+        title: `Could not mark all notifications as ${preferences.markAsDone ? "done" : "read"}`,
+      });
     }
   }
 
@@ -65,7 +74,12 @@ function UnreadNotifications() {
           open(`${notification.repository.html_url}/invitations`);
         } else {
           await open(await getGitHubURL(notification, viewer?.id));
-          await octokit.activity.markThreadAsRead({ thread_id: parseInt(notification.id) });
+
+          if (preferences.markAsDone) {
+            await octokit.activity.markThreadAsDone({ thread_id: parseInt(notification.id) });
+          } else {
+            await octokit.activity.markThreadAsRead({ thread_id: parseInt(notification.id) });
+          }
         }
       };
 
@@ -81,13 +95,21 @@ function UnreadNotifications() {
 
   async function markNotificationAsRead(notification: Notification) {
     try {
-      await mutate(octokit.activity.markThreadAsRead({ thread_id: parseInt(notification.id) }), {
-        optimisticUpdate(data) {
-          return data?.filter((n: Notification) => n.id !== notification.id) ?? [];
+      await mutate(
+        preferences.markAsDone
+          ? octokit.activity.markThreadAsDone({ thread_id: parseInt(notification.id) })
+          : octokit.activity.markThreadAsRead({ thread_id: parseInt(notification.id) }),
+        {
+          optimisticUpdate(data) {
+            return data?.filter((n: Notification) => n.id !== notification.id) ?? [];
+          },
         },
-      });
+      );
     } catch {
-      showToast({ style: Toast.Style.Failure, title: "Could not mark notification as read" });
+      showToast({
+        style: Toast.Style.Failure,
+        title: `Could not mark notification as ${preferences.markAsDone ? "done" : "read"}`,
+      });
     }
   }
 

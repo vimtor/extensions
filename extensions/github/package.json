@@ -31,7 +31,8 @@
     "j3lte",
     "stelo",
     "vlasischar",
-    "javalangruntimeexception"
+    "javalangruntimeexception",
+    "vimtor"
   ],
   "categories": [
     "Developer Tools",
@@ -221,7 +222,17 @@
       "name": "notifications",
       "title": "Notifications",
       "description": "List inbox notifications from all repositories or a selected repository.",
-      "mode": "view"
+      "mode": "view",
+      "preferences": [
+        {
+          "name": "markAsDone",
+          "description": "Mark notifications as done instead of marking them as read.",
+          "type": "checkbox",
+          "required": false,
+          "label": "Mark as Done",
+          "default": false
+        }
+      ]
     },
     {
       "name": "unread-notifications",
@@ -245,6 +256,14 @@
           "description": "Show the unread count in the menu bar.",
           "default": true,
           "required": false
+        },
+        {
+          "name": "markAsDone",
+          "description": "Mark notifications as done instead of marking them as read.",
+          "type": "checkbox",
+          "required": false,
+          "label": "Mark as Done",
+          "default": false
         }
       ]
     },

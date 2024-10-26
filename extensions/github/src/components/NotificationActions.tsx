@@ -1,4 +1,14 @@
-import { Action, ActionPanel, Icon, LaunchType, Toast, launchCommand, open, showToast } from "@raycast/api";
+import {
+  Action,
+  ActionPanel,
+  Icon,
+  LaunchType,
+  Toast,
+  launchCommand,
+  open,
+  showToast,
+  getPreferenceValues,
+} from "@raycast/api";
 import { MutatePromise, usePromise } from "@raycast/utils";
 
 import { getGitHubClient } from "../api/githubClient";
@@ -12,6 +22,8 @@ type NotificationActionsProps = {
   mutateList: MutatePromise<NotificationWithIcon[] | undefined>;
 };
 
+const preferences = getPreferenceValues<Preferences.Notifications>();
+
 export default function NotificationActions({ notification, userId, mutateList }: NotificationActionsProps) {
   const { octokit } = getGitHubClient();
 
@@ -21,21 +33,28 @@ export default function NotificationActions({ notification, userId, mutateList }
   );
 
   async function markNotificationAsRead() {
-    await showToast({ style: Toast.Style.Animated, title: "Marking notification as read" });
+    await showToast({
+      style: Toast.Style.Animated,
+      title: `Marking notification as ${preferences.markAsDone ? "done" : "read"}`,
+    });
 
     try {
-      await octokit.activity.markThreadAsRead({ thread_id: parseInt(notification.id) });
+      if (preferences.markAsDone) {
+        await octokit.activity.markThreadAsDone({ thread_id: parseInt(notification.id) });
+      } else {
+        await octokit.activity.markThreadAsRead({ thread_id: parseInt(notification.id) });
+      }
       await mutateList();
       await launchCommand({ name: "unread-notifications", type: LaunchType.UserInitiated });
 
       await showToast({
         style: Toast.Style.Success,
-        title: "Marked notification as read",
+        title: `Marked notification as ${preferences.markAsDone ? "done" : "read"}`,
       });
     } catch (error) {
       await showToast({
         style: Toast.Style.Failure,
-        title: "Failed marking notification as read",
+        title: `Failed marking notification as ${preferences.markAsDone ? "done" : "read"}`,
         message: getErrorMessage(error),
       });
     }
@@ -48,7 +67,11 @@ export default function NotificationActions({ notification, userId, mutateList }
       }
 
       if (isUnreadNotification) {
-        await octokit.activity.markThreadAsRead({ thread_id: parseInt(notification.id) });
+        if (preferences.markAsDone) {
+          await octokit.activity.markThreadAsDone({ thread_id: parseInt(notification.id) });
+        } else {
+          await octokit.activity.markThreadAsRead({ thread_id: parseInt(notification.id) });
+        }
         await mutateList();
       }
     } catch (error) {
@@ -84,21 +107,28 @@ export default function NotificationActions({ notification, userId, mutateList }
   }
 
   async function markAllNotificationsAsRead() {
-    await showToast({ style: Toast.Style.Animated, title: "Marking all notifications as read" });
+    await showToast({
+      style: Toast.Style.Animated,
+      title: `Marking all notifications as ${preferences.markAsDone ? "done" : "read"}`,
+    });
 
     try {
-      await octokit.activity.markNotificationsAsRead();
+      if (preferences.markAsDone) {
+        await octokit.activity.markThreadAsDone();
+      } else {
+        await octokit.activity.markNotificationsAsRead();
+      }
       await mutateList();
       await launchCommand({ name: "unread-notifications", type: LaunchType.UserInitiated });
 
       await showToast({
         style: Toast.Style.Success,
-        title: "Marked all notifications as read",
+        title: `Marked all notifications as ${preferences.markAsDone ? "done" : "read"}`,
       });
     } catch (error) {
       await showToast({
         style: Toast.Style.Failure,
-        title: "Failed marking all notification as read",
+        title: `Failed marking all notification as ${preferences.markAsDone ? "done" : "read"}`,
         message: getErrorMessage(error),
       });
     }

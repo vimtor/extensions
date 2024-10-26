@@ -1,5 +1,9 @@
 # GitHub Changelog
 
+## [Mark notifications as done] - 2024-10-26
+
+Add a preference to mark notifications as done instead of marking them as read.
+
 ## [Fix crash when searching visited repositories] - 2024-10-04
 
 The issue causing a crash during the "Search Repositories" feature, when two or more repositories had been visited, has been resolved. This problem originated from changes in [this pull request](https://github.com/raycast/extensions/pull/13684).
