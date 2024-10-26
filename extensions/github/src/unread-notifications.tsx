@@ -148,7 +148,7 @@ function UnreadNotifications() {
                   <MenuBarExtra.Item
                     icon={{ source: notification.icon.value["source"], tintColor: Color.PrimaryText }}
                     title={title}
-                    subtitle="Mark as Read"
+                    subtitle={`Mark as ${preferences.markAsDone ? "Done" : "Read"}`}
                     tooltip={tooltip}
                     onAction={() => markNotificationAsRead(notification)}
                   />
@@ -164,7 +164,7 @@ function UnreadNotifications() {
       <MenuBarExtra.Section>
         {hasUnread ? (
           <MenuBarExtra.Item
-            title="Mark All as Read"
+            title={`Mark All as ${preferences.markAsDone ? "Done" : "Read"}`}
             icon={Icon.Checkmark}
             shortcut={{ /* gmail uses shift-i to mark as read */ modifiers: ["cmd"], key: "i" }}
             onAction={markAllNotificationsAsRead}
