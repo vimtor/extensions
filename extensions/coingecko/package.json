@@ -27,6 +27,14 @@
       "subtitle": "Coingecko",
       "description": "Calculates the value of an amount of coins",
       "mode": "view"
+    },
+    {
+      "name": "menu-bar",
+      "title": "Menu Bar Favorites",
+      "subtitle": "Coingecko",
+      "description": "Show favorite coin prices in menu bar",
+      "mode": "menu-bar",
+      "interval": "1m"
     }
   ],
   "preferences": [
@@ -287,6 +295,7 @@
   ],
   "dependencies": {
     "@raycast/api": "^1.51.1",
+    "@raycast/utils": "^2.2.2",
     "axios": "^1.8.4",
     "fuse.js": "^6.6.2"
   },

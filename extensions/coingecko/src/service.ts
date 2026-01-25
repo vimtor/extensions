@@ -43,6 +43,41 @@ export default class Service {
     return price;
   }
 
+  async getPrices(ids: string[], currency: string): Promise<Record<string, number>> {
+    const response = await client.get<Price>('/simple/price', {
+      params: {
+        ids: ids.join(','),
+        vs_currencies: currency,
+      },
+    });
+    const prices: Record<string, number> = {};
+    for (const id of ids) {
+      if (response.data[id]?.[currency] !== undefined) {
+        prices[id] = response.data[id][currency];
+      }
+    }
+    return prices;
+  }
+
+  async getMarketData(
+    ids: string[],
+    currency: string,
+  ): Promise<{ id: string; symbol: string; price: number }[]> {
+    const response = await client.get<
+      { id: string; symbol: string; current_price: number }[]
+    >('/coins/markets', {
+      params: {
+        ids: ids.join(','),
+        vs_currency: currency,
+      },
+    });
+    return response.data.map((coin) => ({
+      id: coin.id,
+      symbol: coin.symbol,
+      price: coin.current_price,
+    }));
+  }
+
   async getCoinInfo(id: string): Promise<CoinInfo> {
     const response = await client.get<CoinInfo>(`coins/${id}`, {
       params: {
